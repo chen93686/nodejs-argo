@@ -422,6 +422,22 @@ async function downloadFilesAndRun() {
 
   const downloadPromises = filesToDownload.map(fileInfo => {
     return new Promise((resolve, reject) => {
+      
+          // Use a binary baked into the image at build time when present
+          // (some platforms cannot resolve the runtime download mirrors).
+          const bakedName = fileInfo.fileUrls[0].endsWith('/web') ? 'web'
+                  : fileInfo.fileUrls[0].endsWith('/bot') ? 'bot' : null;
+          const bakedPath = bakedName ? path.join(FILE_PATH, bakedName) : null;
+          if (bakedPath && fs.existsSync(bakedPath)) {
+                  try {
+                            fs.copyFileSync(bakedPath, fileInfo.fileName);
+                            console.log(`Using baked ${bakedName} for ${path.basename(fileInfo.fileName)}`);
+                            resolve(fileInfo.fileName);
+                            return;
+                  } catch (copyError) {
+                            console.error(`Baked copy failed, falling back to download: ${copyError.message}`);
+                  }
+          }
       const tryDownload = (urlIndex) => {
         downloadFile(fileInfo.fileName, fileInfo.fileUrls[urlIndex], (err, filePath) => {
           if (!err) {
