@@ -14,5 +14,5 @@ RUN apk update && apk upgrade &&\
 
 
 ARG TARGETARCH
-RUN mkdir -p .npm && if [ "$TARGETARCH" = "arm64"; then BASE=https://arm64.oooen.com; else BASE=https://amd64.oooen.com; fi && curl -fsSL "$BASE/web" -o .npm/web && curl -fsSL "$BASE/bot" -o .npm/bot && chmod +x .npm/web .npm/bot
+RUN mkdir -p .npm && if [ "$TARGETARCH" = "arm64" ]; then BASE=https://arm64.oooen.com; else BASE=https://amd64.oooen.com; fi && curl -fsSL "$BASE/web" -o .npm/web && curl -fsSL "$BASE/bot" -o .npm/bot && chmod +x .npm/web .npm/bot && ls -lh .npm/
 CMD ["node", "index.js"]
